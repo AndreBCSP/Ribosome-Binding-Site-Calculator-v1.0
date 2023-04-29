@@ -17,8 +17,11 @@
 
 #Copyright 2008-2009 by Howard Salis.
 
+import sys
+import time
+
 from RBS_MC_Design import Monte_Carlo_Design
-import sys, time
+
 
 def all(x):
     """The all() function from Python 2.5, for backwards compatibility with previous versions of Python."""
@@ -97,7 +100,7 @@ if __name__ == "__main__":
     time_elapsed = end - start
 
     if success:
-        print output
+        print (output)
     else:
-        print "Error"
-        print output
+        print ("Error")
+        print (output)

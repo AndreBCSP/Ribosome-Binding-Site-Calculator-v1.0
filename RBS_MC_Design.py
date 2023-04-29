@@ -16,8 +16,11 @@
 
 #Copyright 2008-2009 is owned by the University of California Regents. All rights reserved.
 
+import math
+import random
+import sets
+
 from RBS_Calculator import RBS_Calculator
-import random, math, sets
 
 infinity = 1.0e20
 
@@ -125,9 +128,9 @@ def calc_constraints(RBS,estimator):
     three_state_indicator = estimator.three_state_indicator_list[0]
     #(helical_loop_list,bulge_loop_list,helical_start_ends,bulge_start_ends) = estimator.calc_longest_loop_bulge(estimator,True,True,RBS)
 
-    #print "KS = ", kinetic_score
-    #print "3-state = ", three_state_indicator
-    #print "max/min helical = ", max(helical_loop_list), min(helical_loop_list)
+    #print ("KS = ", kinetic_score)
+    #print ("3-state = ", three_state_indicator)
+    #print ("max/min helical = ", max(helical_loop_list), min(helical_loop_list))
 
     if kinetic_score > max_kinetic_score: return True
     if three_state_indicator > max_three_state_indicator: return True
@@ -209,7 +212,7 @@ def MCmove_lower_kinetic_score(pre_seq,post_seq,RBS,estimator = None,MaxIters=in
                 pos = nt_x - RBS_begin
                 letter = random.choice(list(nucleotides ^ sets.Set(RBS[pos])))
 
-                #print "Mutating ", RBS[pos], " --> ", letter
+                #print ("Mutating ", RBS[pos], " --> ", letter)
 
                 RBS = RBS[0:pos] + letter + RBS[pos+1:len(RBS)+1]
 
@@ -219,7 +222,7 @@ def MCmove_lower_kinetic_score(pre_seq,post_seq,RBS,estimator = None,MaxIters=in
                 pos = nt_y - RBS_begin
                 letter = random.choice(list(nucleotides ^ sets.Set(RBS[pos])))
 
-                #print "Mutating ", RBS[pos], " --> ", letter
+                #print ("Mutating ", RBS[pos], " --> ", letter)
 
                 RBS = RBS[0:pos] + letter + RBS[pos+1:len(RBS)+1]
 
@@ -228,13 +231,13 @@ def MCmove_lower_kinetic_score(pre_seq,post_seq,RBS,estimator = None,MaxIters=in
                 #Insert a nucleotide at the 5' end of the RBS
                 letter = random.choice(list(nucleotides))
 
-                #print "Inserting ", letter, " at 5' end"
+                #print ("Inserting ", letter, " at 5' end")
 
                 RBS = letter + RBS
 
         RBS = RemoveStartCodons(RBS) #No start codons in RBS!!
 
-        #print "RBS = ", RBS
+        #print ("RBS = ", RBS)
         estimator = Run_RBS_Calculator(pre_seq,post_seq,RBS,verbose=False)
         kinetic_score = estimator.kinetic_score_list[0]
 
@@ -263,7 +266,7 @@ def MCmove_constrain_helical_loop(pre_seq,post_seq,RBS,estimator):
             loop_range = sets.Set(range(start_end[0]+1,start_end[1]))
             change_range = list(RBS_range & loop_range) #Intersection
 
-            #print "Loops in RBS: ", change_range
+            #print ("Loops in RBS: ", change_range)
 
             if len(change_range) > 0:
                 pos = random.choice(change_range) - len(pre_seq)
@@ -277,7 +280,7 @@ def MCmove_constrain_helical_loop(pre_seq,post_seq,RBS,estimator):
             loop_range = sets.Set(range(start_end[0]+1,start_end[1]))
             change_range = list(RBS_range & loop_range) #Intersection
 
-            #print "Loops in RBS: ", change_range
+            #print ("Loops in RBS: ", change_range)
 
             if len(change_range) > 0:
                 pos = random.choice(change_range) - len(pre_seq)
@@ -363,7 +366,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
     if TIR_target is not None:
         dG_target = RBS_Calculator.RT_eff * (RBS_Calculator.logK - math.log(float(TIR_target)))
 
-    if verbose: print "dG_target = ", dG_target
+    if verbose: print ("dG_target = ", dG_target)
 
     #Parameters
     max_init_energy = 10.0 #kcal/mol
@@ -378,7 +381,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
     calc_energy = lambda (dG_total): abs(dG_total - dG_target)
 
     #If RBS_Init is given, use it. Otherwise, randomly choose one that is a decent starting point.
-    if verbose: print "Determining Initial RBS"
+    if verbose: print ("Determining Initial RBS")
 
     if RBS_init is None:
         (RBS,estimator) = GetInitialRBS(pre_seq,post_seq,dG_target)
@@ -395,7 +398,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
     dG_total = estimator.dG_total_list[0]
     energy = calc_energy(dG_total)
 
-    if verbose: print "Initial RBS = ", RBS, " Energy = ", energy
+    if verbose: print ("Initial RBS = ", RBS, " Energy = ", energy)
     if verbose: estimator.print_dG(estimator.infinity)
 
     while energy > tol and counter < MaxIter:
@@ -407,7 +410,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
             move = weighted_choice(weighted_moves)
 
             RBS_new = ''
-            if verbose: print "Move #", counter, ": ", move
+            if verbose: print ("Move #", counter, ": ", move)
             if move == 'insert':
 
                 pos = int(random.uniform(0.0,1.0) * len(RBS))
@@ -436,14 +439,14 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
             if calc_constraints(RBS_new,estimator):
                 energy_new = infinity
 
-            if verbose: print "New energy = ", energy_new
+            if verbose: print ("New energy = ", energy_new)
 
             if energy_new < energy:
                 #Accept move immediately
                 RBS = RBS_new
                 energy = energy_new
                 accepted = True
-                if verbose: print "Move immediately accepted"
+                if verbose: print ("Move immediately accepted")
             else:
 
                 ddE = (energy - energy_new)
@@ -456,11 +459,11 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
                     energy = energy_new
                     accepts += 1
                     accepted = True
-                    if verbose: print "Move conditionally accepted"
+                    if verbose: print ("Move conditionally accepted")
                 else:
                     #Reject move
                     rejects += 1
-                    if verbose: print "Move rejected"
+                    if verbose: print ("Move rejected")
 
             if accepted and verbose: estimator.print_dG(estimator.infinity)
 
@@ -474,17 +477,17 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
                     RT = RT / 2.0
                     accepts = 0
                     rejects = 0
-                    if verbose: print "Accepting too many conditional moves, reducing temperature"
+                    if verbose: print ("Accepting too many conditional moves, reducing temperature")
 
                 if ratio < annealing_accept_ratios[0]:
                     #Too many rejects, increase RT
                     RT = RT * 2.0
                     accepts = 0
                     rejects = 0
-                    if verbose: print "Rejecting too many conditional moves, increasing temperature"
+                    if verbose: print ("Rejecting too many conditional moves, increasing temperature")
 
         except KeyboardInterrupt:
-            if verbose: print "Calculating Final State"
+            if verbose: print ("Calculating Final State")
             estimator = Run_RBS_Calculator(pre_seq,post_seq,RBS,verbose=False)
 
             dG_total = estimator.dG_total_list[0]
@@ -492,7 +495,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
 
     if verbose: estimator.print_dG(estimator.infinity)
 
-    if verbose: print "Total number of RBS Evaluations: ", num_rbs_calculations
+    if verbose: print ("Total number of RBS Evaluations: ", num_rbs_calculations)
 
     if TIR_target is not None:
 
@@ -528,7 +531,7 @@ def MC_Design_from_file(handle, output, dG_target, verbose = True, **kvars):
         [dG_total, RBS, estimator] = Monte_Carlo_Design(pre_seq, post_seq, dG_target[counter/2-1], verbose,kvars)
 
         if verbose: estimator.print_dG(estimator.infinity)
-        if verbose: print "Final RBS = ", RBS
+        if verbose: print ("Final RBS = ", RBS)
 
         estimator.save_data(output, First)
         if First:
@@ -549,9 +552,7 @@ if __name__ == "__main__":
 
     (dG_total, RBS, estimator, iterations) = Monte_Carlo_Design(pre_RBS, post_RBS, RBS_init = None, dG_target = dG_target, MaxIter = 10000, verbose = True)
 
-    print "Finished"
-    print "dG_total = ", dG_total
-    print "RBS = ", RBS
-    print "# iterations = ", iterations
-
-
+    print ("Finished")
+    print ("dG_total = ", dG_total)
+    print ("RBS = ", RBS)
+    print ("# iterations = ", iterations)

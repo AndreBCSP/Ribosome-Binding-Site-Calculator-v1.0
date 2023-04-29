@@ -15,8 +15,10 @@
 
 #Copyright 2008-2009 Howard Salis
 
+import math
+import sys
+
 from RBS_Calculator import RBS_Calculator
-import sys, math
 
 if __name__ == "__main__":
     #Read command line arguments
@@ -33,7 +35,7 @@ if __name__ == "__main__":
         seq = input_args[1]
     else:
         output = "Usage: " + input_args[0] + " [RNA/DNA Sequence] (start position)" + "\n"
-        print output
+        print (output)
 
     if start == 0:
         start_range = [0, len(seq)]
@@ -54,6 +56,6 @@ if __name__ == "__main__":
     for dG in dG_total_list:
         expr_list.append(calcObj.K * math.exp(-dG/calcObj.RT_eff))
 
-    print len(expr_list)
+    print (len(expr_list))
     for (expr,start_pos,ks) in zip(expr_list,start_pos_list,kinetic_score_list):
-        print start_pos, expr, ks
+        print (start_pos, expr, ks)

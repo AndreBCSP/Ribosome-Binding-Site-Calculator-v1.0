@@ -18,8 +18,12 @@
 #This Python wrapper is written by Howard Salis. Copyright 2008-2009 is owned by the University of California Regents. All rights reserved. :)
 #Use at your own risk.
 
+import os
 import os.path
-import os, popen2, time, random, string
+import popen2
+import random
+import string
+import time
 
 tempdir = "/tmp" + "".join([random.choice(string.digits) for x in range(6)])
 
@@ -91,7 +95,7 @@ class NuPACK(dict):
             except:
                 break
 
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print (output.fromchild.read())
 
         #Read output files
         self._read_output_cx()
@@ -107,7 +111,7 @@ class NuPACK(dict):
             self._cleanup("ocx-key")
         self._cleanup("in")
 
-        #print "Complex energies and secondary structures calculated."
+        #print ("Complex energies and secondary structures calculated.")
         self.ran = 1
         self["program"] = "complexes"
 
@@ -141,13 +145,13 @@ class NuPACK(dict):
             except:
                 break
 
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print (output.fromchild.read())
 
         self._read_output_mfe()
         self._cleanup("mfe")
         self._cleanup("in")
         self["program"] = "mfe"
-        #print "Minimum free energy secondary structure has been calculated."
+        #print ("Minimum free energy secondary structure has been calculated.")
 
 
     def subopt(self, strands,energy_gap,Temp = 37.0, multi = " -multi", pseudo = "", degenerate = "", dangles = "some"):
@@ -180,14 +184,14 @@ class NuPACK(dict):
             except:
                 break
 
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print (output.fromchild.read())
 
         self._read_output_subopt()
         self._cleanup("subopt")
         self._cleanup("in")
         self["program"] = "subopt"
 
-        #print "Minimum free energy and suboptimal secondary structures have been calculated."
+        #print ("Minimum free energy and suboptimal secondary structures have been calculated.")
 
     def energy(self, strands, base_pairing_x, base_pairing_y, Temp = 37.0, multi = " -multi", pseudo = "", degenerate = "", dangles = "some"):
 
@@ -219,7 +223,7 @@ class NuPACK(dict):
             except:
                 break
 
-        #if debug == 1: print output.fromchild.read()
+        #if debug == 1: print (output.fromchild.read())
 
         self["energy_energy"] = []
 
@@ -269,7 +273,7 @@ class NuPACK(dict):
             except:
                 break
 
-        #if debug == 1: print output.fromchild.read()
+        #if debug == 1: print (output.fromchild.read())
 
         #Skip the comments of the text file
         line = output.fromchild.readline()
@@ -319,7 +323,7 @@ class NuPACK(dict):
             except:
                 break
 
-        #if debug == 1: print output.fromchild.read()
+        #if debug == 1: print (output.fromchild.read())
 
         #Skip the comments of the text file
         line = output.fromchild.readline()
@@ -727,14 +731,14 @@ class NuPACK(dict):
         args = "-p" #to PostScript file
         output = popen2.Popen3(cmd + " " + args + " " + inputfile,"r")
         output.wait()
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print (output.fromchild.read())
 
         inputfile = inputfile[0:len(inputfile)-2] + "ps"
 
         cmd = "ps2pdf" #Assumes it's on the path
         output = popen2.Popen3(cmd + " " + inputfile,"r")
         output.wait()
-        if debug == 1: print output.fromchild.read()
+        if debug == 1: print (output.fromchild.read())
 
         outputfile = inputfile[0:len(inputfile)-2] + "pdf"
 
@@ -803,10 +807,10 @@ class NuPACK(dict):
 
         seq_len = len(allseq)
 
-        #print "Seq Len = ", seq_len, "  Composition = ", composition
-        #print "Sequence = ", allseq
-        #print "Base pairing (x) = ", bp_x
-        #print "Base pairing (y) = ", bp_y
+        #print ("Seq Len = ", seq_len, "  Composition = ", composition)
+        #print ("Sequence = ", allseq)
+        #print ("Base pairing (x) = ", bp_x)
+        #print ("Base pairing (y) = ", bp_y)
 
 
         #Create the header
@@ -919,7 +923,7 @@ if __name__ == "__main__":
     test = NuPACK(sequences,"rna1999")
     test.complexes(3,mfe = 1, ordered=1)
 
-    print test
+    print (test)
 
     strand_compositions = test["ordered_composition"]
     num_complexes = len(strand_compositions)
@@ -933,7 +937,7 @@ if __name__ == "__main__":
 
         output = output + "  dG (RT ln Q): " + str(test["ordered_energy"][counter]) + " kcal/mol"
         output = output + "  # Permutations: " + str(test["ordered_permutations"][counter])
-        print output
+        print (output)
         test.export_PDF(counter, name = "Complex #" + str(counter+1), filename = "Complex_" + str(counter) + ".pdf", program = "ordered")
 
     #Mfe
@@ -944,8 +948,4 @@ if __name__ == "__main__":
     #test.mfe([1, 2], dangles = "all")
     #num_complexes = test["mfe_NumStructs"]  #Number of degenerate complexes (same energy)
     #dG_mfe = test["mfe_energy"]
-    #print "There are ", num_complexes, " configuration(s) with a minimum free energy of ", dG_mfe, " kcal/mol."
-
-
-
-
+    #print ("There are ", num_complexes, " configuration(s) with a minimum free energy of ", dG_mfe, " kcal/mol.")
