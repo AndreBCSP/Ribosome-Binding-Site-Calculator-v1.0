@@ -18,7 +18,7 @@
 
 import math
 import random
-import sets
+from builtins import set
 
 from RBS_Calculator import RBS_Calculator
 
@@ -61,7 +61,7 @@ def weighted_choice(list_of_tuples):
 def Run_RBS_Calculator(pre_seq,post_seq,RBS,verbose=True):
     """Short cut function to run the RBS Calculator on a pre_sequence, CDS, and RBS."""
 
-    if vars().has_key('estimator'): del(estimator)
+    if 'estimator' in vars(): del(estimator)
 
     start_range = [len(pre_seq) + len(RBS) - 2, len(pre_seq) + len(RBS) + 2]
 
@@ -199,7 +199,7 @@ def MCmove_lower_kinetic_score(pre_seq,post_seq,RBS,estimator = None,MaxIters=in
 
         #Determine the bp'd nucleotides with the highest kinetic score. Are either located in the RBS?
         #If so, replace them with another random nucleotide
-        nucleotides = sets.Set(['A', 'T', 'G', 'C'])
+        nucleotides = set(['A', 'T', 'G', 'C'])
 
         num_mutations = min(len(ks_list),10)
         for i in range(num_mutations):
@@ -210,7 +210,7 @@ def MCmove_lower_kinetic_score(pre_seq,post_seq,RBS,estimator = None,MaxIters=in
             if (nt_x >= RBS_begin and nt_x < RBS_end):
 
                 pos = nt_x - RBS_begin
-                letter = random.choice(list(nucleotides ^ sets.Set(RBS[pos])))
+                letter = random.choice(list(nucleotides ^ set(RBS[pos])))
 
                 #print ("Mutating ", RBS[pos], " --> ", letter)
 
@@ -220,7 +220,7 @@ def MCmove_lower_kinetic_score(pre_seq,post_seq,RBS,estimator = None,MaxIters=in
             #nt_y is in the RBS
             elif (nt_y >= RBS_begin and nt_y < RBS_end):
                 pos = nt_y - RBS_begin
-                letter = random.choice(list(nucleotides ^ sets.Set(RBS[pos])))
+                letter = random.choice(list(nucleotides ^ set(RBS[pos])))
 
                 #print ("Mutating ", RBS[pos], " --> ", letter)
 
@@ -262,8 +262,8 @@ def MCmove_constrain_helical_loop(pre_seq,post_seq,RBS,estimator):
             #Choose random nucleotide in loop. Delete it.
 
             #Identify what part of the loop is in the RBS
-            RBS_range = sets.Set(range(RBS_begin+1,RBS_end+1))
-            loop_range = sets.Set(range(start_end[0]+1,start_end[1]))
+            RBS_range = set(range(RBS_begin+1,RBS_end+1))
+            loop_range = set(range(start_end[0]+1,start_end[1]))
             change_range = list(RBS_range & loop_range) #Intersection
 
             #print ("Loops in RBS: ", change_range)
@@ -276,8 +276,8 @@ def MCmove_constrain_helical_loop(pre_seq,post_seq,RBS,estimator):
         elif loop_length < min_helical_loop:
             #Choose random position in loop and insert a nucleotide before it.
             #Identify what part of the loop is in the RBS
-            RBS_range = sets.Set(range(RBS_begin+1,RBS_end+1))
-            loop_range = sets.Set(range(start_end[0]+1,start_end[1]))
+            RBS_range = set(range(RBS_begin+1,RBS_end+1))
+            loop_range = set(range(start_end[0]+1,start_end[1]))
             change_range = list(RBS_range & loop_range) #Intersection
 
             #print ("Loops in RBS: ", change_range)
@@ -378,7 +378,7 @@ def Monte_Carlo_Design(pre_seq, post_seq, RBS_init = None, TIR_target = None, dG
     weighted_moves = [('insert',0.10),('delete',0.10),('replace',0.80)]
 
     #Define the energy/cost function based on the dG_target and the other, optional targets
-    calc_energy = lambda (dG_total): abs(dG_total - dG_target)
+    calc_energy = lambda dG_total: abs(dG_total - dG_target)
 
     #If RBS_Init is given, use it. Otherwise, randomly choose one that is a decent starting point.
     if verbose: print ("Determining Initial RBS")

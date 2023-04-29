@@ -771,7 +771,7 @@ class RBS_Calculator(NuPACK):
                 #index = corrected_structure["MinStructureID"]
                 #corrected_structure.export_PDF(index, name = self.name + ": After standby site", filename =  self.name + "_After_Standby_rRNA.pdf", program = "subopt")
 
-            except CalcError, msg:
+            except (CalcError, msg):
                 print (msg)
                 self.mRNA_structure_list.append([])
                 self.mRNA_rRNA_uncorrected_structure_list.append([])
@@ -1048,7 +1048,7 @@ if __name__ == "__main__":
     #filename = "/common/RBS_Calculator/DataSets/DNA20_CDSs.fasta"
     #output_filename = "/common/RBS_Calculator/Output_Forward_Predictions_dangles_all_TTC.txt"
     #output_filename = "/common/RBS_Calculator/Output_Context_Tests_RBSs_test.txt"
-    filename = "/common/RBS_Calculator/DataSets/All_Tested_RBSs.txt"
+    filename = "F:\\rbs_calculator\\test.txt"
     #filename = "E:\RBS_Calculator\DataSets\All_Tested_RBSs.txt"
     #filename = "/common/RBS_Calculator/DataSets/Testing_RBSs.txt"
     #filename = "/common/RBS_Calculator/DataSets/Karsten_nif_RBSs.txt"
@@ -1082,9 +1082,9 @@ if __name__ == "__main__":
     window_list = range(10,65)
     for window in window_list:
         print ("Cutoff = ", window)
-        output_filename = "/common/RBS_Calculator/DataSets/cutoff/Output_All_Tested_RBSs_cutoff_" + str(window) + ".txt"
+        output_filename = "F:\\rbs_calculator\\output" + str(window) + ".txt"
 
-        handle = open(filename,"rU")
+        handle = open(filename,"r", newline=None)
         output = open(output_filename,"w")
 
         verbose = True

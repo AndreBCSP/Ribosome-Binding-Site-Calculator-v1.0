@@ -20,9 +20,9 @@
 
 import os
 import os.path
-import popen2
 import random
 import string
+import subprocess
 import time
 
 tempdir = "/tmp" + "".join([random.choice(string.digits) for x in range(6)])
@@ -58,7 +58,7 @@ class NuPACK(dict):
         self["material"] = material
 
         random.seed(time.time())
-        long_id = "".join([random.choice(string.letters + string.digits) for x in range(10)])
+        long_id = "".join([random.choice(string.ascii_letters + string.digits) for x in range(10)])
         self.prefix = current_dir + "/nu_temp_" + long_id
 
     def complexes(self,MaxStrands, Temp = 37.0, ordered = "", pairs = "", mfe = "", degenerate = "", dangles = "some", timeonly = "", quiet="", AdditionalComplexes = []):
@@ -87,7 +87,7 @@ class NuPACK(dict):
         args = " -T " + str(Temp) + " -material " + material + " " + ordered + pairs + mfe + degenerate \
         + dangles + timeonly + quiet + " "
 
-        output = popen2.Popen3(cmd + args + self.prefix)
+        output = subprocess.Popen(cmd + args + self.prefix)
         while output.poll() < 0:
             try:
                 output.wait()
@@ -137,7 +137,7 @@ class NuPACK(dict):
         cmd = "mfe"
         args = " -T " + str(Temp) + multi + pseudo + " -material " + material + degenerate + dangles + " "
 
-        output = popen2.Popen3(cmd + args + self.prefix)
+        output = subprocess.Popen(cmd + args + self.prefix)
         while output.poll() < 0:
             try:
                 output.wait()
